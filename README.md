@@ -7,8 +7,7 @@ Sneaky version of [Tangram-ES](https://github.com/tangrams/tangram-es) to take s
 
 ```bash
 sudo apt-get update
-sudo apt-get install make libcurl4-openssl-dev
-export CXX=/usr/bin/g++-4.9
+sudo apt-get install make cmake g++ libcurl4-openssl-dev
 
 cd ~
 git clone --recursive https://github.com/tangrams/paparazzi.git

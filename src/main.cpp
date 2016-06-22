@@ -14,7 +14,11 @@
 #include "context.h"
 #include "tangram.h"
 #include "platform.h"
-#include "platform_rpi.h"
+
+#include "platform_linux.h"
+// #include "platform_rpi.h"
+
+
 
 #include <sstream>
 #include <iostream>
