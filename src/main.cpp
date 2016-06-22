@@ -162,8 +162,6 @@ void newFrame() {
     // Render
     Tangram::render();
 
-    renderGL();
-
     if (bFinish) {
         LOG("SAVING PNG %s", outputFile.c_str());
         unsigned char* pixels = new unsigned char[iWidth*iHeight*4];
@@ -171,6 +169,8 @@ void newFrame() {
         savePixels(outputFile.c_str(), pixels, iWidth, iHeight);
         bUpdate = false;
     }
+
+    renderGL();
 }
 
 //======================================================================= EVENTS

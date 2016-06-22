@@ -1,4 +1,5 @@
 var http = require('http'),   // http server
+    https = require('https'),
       fs = require('fs'),     // filesystem.
     path = require('path'),   // used for traversing your OS.
      url = require('url'),
@@ -17,17 +18,30 @@ function parseQuery (qstr) {
     return query;
 }
 
+function download(url, dest, cb) {
+    var file = fs.createWriteStream(dest);
+    var request = https.get(url, function(response) {
+        response.pipe(file);
+        file.on('finish', function() {
+            file.close(cb);  // close() is async, call cb after close completes.
+        });
+    }).on('error', function(err) { // Handle errors
+        fs.unlink(dest); // Delete the file async. (But we don't check the result)
+        if (cb) cb(err.message);
+    });
+};
+
 var server = http.createServer( function (req, res) {
     var request = url.parse(req.url);
-
+        
     console.log('Request', request);
 
     if (request.query) {
         var query = parseQuery(request.query);
-
         console.log('Query', query);
 
         var command = 'build/bin/./tangramPaparazzi';
+       
         if (query['lat'] && typeof parseFloat(query['lat']) === 'number') {
             command += ' -lat ' + query['lat'];
         }
@@ -43,11 +57,6 @@ var server = http.createServer( function (req, res) {
         if (query['rot'] && typeof parseFloat(query['rot']) === 'number') {
             command += ' -r ' + query['rot'];
         }
-    
-        if (query['scene']) {
-            console.log(query['scene']);
-        }
-
         if (query['width'] && typeof query['width'] === 'number') {
             command += ' -w ' + query['width'];
         }
@@ -55,11 +64,22 @@ var server = http.createServer( function (req, res) {
             command += ' -h ' + query['height'];
         }
         command += ' -o out.png';
-        console.log('Command',command);
-        exec(command);
-        console.log('Done');
-        var img = fs.readFileSync('out.png');
-        res.writeHead(200, {'Content-Type': 'image/png' });
-        res.end(img, 'binary');
+         if (query['scene']) {
+            download(query['scene'],'infile.yaml', () => {
+                console.log('File '+query['scene'] +' downloaded');
+                command += ' -s infile.yaml';
+                exec(command);
+                console.log('Done');
+                var img = fs.readFileSync('out.png');
+                res.writeHead(200, {'Content-Type': 'image/png' });
+                res.end(img, 'binary');
+            });
+        } else {
+            exec(command);
+            console.log('Done');
+            var img = fs.readFileSync('out.png');
+            res.writeHead(200, {'Content-Type': 'image/png' });
+            res.end(img, 'binary');
+        }
     }
 }).listen(HTTP_PORT);
