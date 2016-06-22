@@ -124,7 +124,10 @@ void setup(int argc, char **argv) {
             std::string argument = std::string(argv[i+1]);
             std::istringstream cur(argument);
             cur >> rot;
+        } else if (std::string(argv[i]) == "-o" ) {
+            outputFile = std::string(argv[i+1]);
         }
+
     }
 
     Tangram::initialize(scene.c_str());
@@ -158,8 +161,6 @@ void newFrame() {
 
     // Render
     Tangram::render();
-
-    LOG("VIEW COMPLETE %d", bFinish);
 
     renderGL();
 

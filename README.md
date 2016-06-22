@@ -5,6 +5,8 @@ Sneaky version of [Tangram-ES](https://github.com/tangrams/tangram-es) to take s
 
 ## Install
 
+Compile `tangramPaparazzi`:
+
 ```bash
 sudo apt-get update
 sudo apt-get install make cmake g++ libcurl4-openssl-dev
